@@ -4,8 +4,7 @@ import Login from './Login';
 import axios from 'axios';
 import './App.css'; // Import the custom CSS
 
-const ENDPOINT = 'https://ai-code-generator-backend.vercel.app/';
-
+const ENDPOINT = process.env.REACT_APP_API_URL;
 function App() {
   const [token, setToken] = useState('');
   const [socket, setSocket] = useState(null);
