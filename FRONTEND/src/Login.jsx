@@ -1,74 +1,52 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './Login.css';
+
+// Hardcoded backend URL
+const API_URL = 'https://ai-code-generator-backend.vercel.app/'; // ← Replace with your actual backend URL
 
 function Login({ setToken }) {
-  const [form, setForm] = useState({ username: '', password: '' });
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault(); // prevent form reload
+    e.preventDefault();
+    setError('');
     try {
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, form);
+      const res = await axios.post(`${API_URL}/api/auth/login`, form);
       setToken(res.data.token);
-    } catch (error) {
-      console.error('Login error:', error);
-      alert('Login failed');
-    }
-  };
-
-  const handleRegister = async () => {
-    try {
-      await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/register`, form);
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, form);
-      setToken(res.data.token);
-    } catch (error) {
-      console.error('Register error:', error);
-      alert('Registration failed');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed');
     }
   };
 
   return (
-    <div className="container d-flex align-items-center justify-content-center min-vh-100 bg-light">
-      <div className="card p-4 shadow" style={{ maxWidth: '400px', width: '100%' }}>
-        <h3 className="text-center mb-4 text-primary">Login or Register</h3>
-
-        <form onSubmit={handleLogin}>
-          <div className="mb-3">
-            <input
-              name="username"
-              placeholder="Username"
-              value={form.username}
-              onChange={handleChange}
-              className="form-control"
-              required
-            />
-          </div>
-
-          <div className="mb-3">
-            <input
-              name="password"
-              type="password"
-              placeholder="Password"
-              value={form.password}
-              onChange={handleChange}
-              className="form-control"
-              required
-            />
-          </div>
-
-          <div className="d-grid gap-2">
-            <button type="submit" className="btn btn-primary">
-              Login
-            </button>
-            <button type="button" onClick={handleRegister} className="btn btn-secondary">
-              Register
-            </button>
-          </div>
-        </form>
-      </div>
+    <div className="login-container">
+      <form onSubmit={handleLogin} className="login-card">
+        <h2>Login</h2>
+        {error && <p className="error">{error}</p>}
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
+        <button type="submit" className="btn login-btn">Login</button>
+      </form>
     </div>
   );
 }
