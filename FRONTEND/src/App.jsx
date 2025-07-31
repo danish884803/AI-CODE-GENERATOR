@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import Login from './Login';
-import './App.css';
+import axios from 'axios';
+import './App.css'; // Import the custom CSS
 
-// Hardcoded backend URL
-const API_URL = 'https://ai-code-generator-backend.vercel.app/'; // ← Replace with your actual backend URL
+const ENDPOINT = 'http://localhost:5000';
 
 function App() {
   const [token, setToken] = useState('');
@@ -14,22 +14,20 @@ function App() {
 
   useEffect(() => {
     if (token) {
-      const sock = io(API_URL, { auth: { token } });
+      const sock = io(ENDPOINT, { auth: { token } });
       sock.on('status', setResult);
       sock.on('result', setResult);
       setSocket(sock);
 
       return () => {
-        sock.disconnect();
+        sock.disconnect(); 
       };
     }
   }, [token]);
 
   const handlePrompt = () => {
-    if (socket && prompt.trim()) {
-      socket.emit('prompt', prompt);
-      setResult('Generating...');
-    }
+    socket.emit('prompt', prompt);
+    setResult('Generating...');
   };
 
   const handleDownload = () => {
@@ -53,7 +51,9 @@ function App() {
       <div className="app-card">
         <div className="app-header">
           <h2>AI Code Generator</h2>
-          <button className="btn logout-btn" onClick={handleLogout}>Logout</button>
+          <button className="btn logout-btn" onClick={handleLogout}>
+            Logout
+          </button>
         </div>
 
         <div className="form-group">
@@ -68,8 +68,12 @@ function App() {
         </div>
 
         <div className="button-group">
-          <button className="btn generate-btn" onClick={handlePrompt}>Generate</button>
-          <button className="btn download-btn" onClick={handleDownload}>Download</button>
+          <button className="btn generate-btn" onClick={handlePrompt}>
+            Generate
+          </button>
+          <button className="btn download-btn" onClick={handleDownload}>
+            Download
+          </button>
         </div>
 
         <div className="output-group">

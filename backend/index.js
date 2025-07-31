@@ -10,45 +10,23 @@ const authRoutes = require('./routes/authRoutes');
 const { generateCode } = require('./services/gemini');
 
 dotenv.config();
-
 const app = express();
 const server = http.createServer(app);
-
-// ✅ Allowed Origins
-const allowedOrigins = [
-  'https://ai-code-generatorfront.vercel.app',
-  'http://localhost:3000',
-];
-
-// ✅ CORS Middleware
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS not allowed'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true,
-}));
-
-// ✅ Handle preflight requests
-app.options('*', cors());
-
-// ✅ Body parser
-app.use(express.json());
-
-// ✅ Routes
-app.use('/api/auth', authRoutes);
-
-// ✅ Socket.IO + JWT
 const io = new Server(server, {
-  cors: {
-    origin: allowedOrigins,
-    credentials: true,
-  },
+  cors: { origin: '*' }
 });
+
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => console.log(' MongoDB connected'))
+  .catch((err) => console.error('❌ MongoDB error:', err));
+
+app.use(cors());
+app.use(express.json());
+app.use('/api/auth', authRoutes);
 
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
@@ -56,13 +34,13 @@ io.use((socket, next) => {
     const user = jwt.verify(token, process.env.JWT_SECRET);
     socket.user = user;
     next();
-  } catch (err) {
+  } catch {
     next(new Error('Unauthorized'));
   }
 });
 
 io.on('connection', (socket) => {
-  console.log(`🔌 Connected: ${socket.user.username}`);
+  console.log(` Connected: ${socket.user.username}`);
 
   socket.on('prompt', async (prompt) => {
     socket.emit('status', '⏳ Generating...');
@@ -75,17 +53,5 @@ io.on('connection', (socket) => {
   });
 });
 
-// ✅ Mongo + Server startup
 const PORT = process.env.PORT || 5000;
-
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log('✅ MongoDB connected');
-  server.listen(PORT, () =>
-    console.log(`🚀 Server running on port ${PORT}`)
-  );
-})
-.catch((err) => console.error('❌ MongoDB error:', err));
+server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
