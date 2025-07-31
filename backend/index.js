@@ -15,22 +15,22 @@ const app = express();
 const server = http.createServer(app);
 
 // ✅ Replace '*' with your frontend Vercel domain
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://ai-code-generatorfront.vercel.app',
-];
 
 // 🛡️ Apply CORS for Express
+const allowedOrigins = [
+  'https://ai-code-generatorfront.vercel.app',
+  'http://localhost:3000',
+];
+
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
 }));
+
+// Also respond to preflight requests
+app.options('*', cors());
+
 
 // 📦 Middlewares
 app.use(express.json());
