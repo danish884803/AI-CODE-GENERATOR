@@ -14,13 +14,13 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-// ✅ Define allowed origins (add your actual frontend URL)
+// ✅ Allowed Origins
 const allowedOrigins = [
   'https://ai-code-generatorfront.vercel.app',
   'http://localhost:3000',
 ];
 
-// 🛡️ Enable CORS
+// ✅ CORS Middleware
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -33,16 +33,16 @@ app.use(cors({
   credentials: true,
 }));
 
-// 👇 Handle preflight requests globally
+// ✅ Handle preflight requests
 app.options('*', cors());
 
-// 📦 Middleware
+// ✅ Body parser
 app.use(express.json());
 
-// 🔐 API routes
+// ✅ Routes
 app.use('/api/auth', authRoutes);
 
-// ⚡ Setup Socket.IO with JWT auth
+// ✅ Socket.IO + JWT
 const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
@@ -75,18 +75,17 @@ io.on('connection', (socket) => {
   });
 });
 
-// 🚀 Start Server
+// ✅ Mongo + Server startup
 const PORT = process.env.PORT || 5000;
 
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log('✅ MongoDB connected');
-    server.listen(PORT, () =>
-      console.log(`🚀 Server running on port ${PORT}`)
-    );
-  })
-  .catch((err) => console.error('❌ MongoDB error:', err));
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  console.log('✅ MongoDB connected');
+  server.listen(PORT, () =>
+    console.log(`🚀 Server running on port ${PORT}`)
+  );
+})
+.catch((err) => console.error('❌ MongoDB error:', err));
