@@ -10,23 +10,39 @@ const authRoutes = require('./routes/authRoutes');
 const { generateCode } = require('./services/gemini');
 
 dotenv.config();
+
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: { origin: '*' }
-});
 
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
-  .then(() => console.log(' MongoDB connected'))
-  .catch((err) => console.error('❌ MongoDB error:', err));
+// ✅ Replace '*' with your frontend Vercel domain
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://ai-code-generatorfront.vercel.app',
+];
 
-app.use(cors());
+// 🛡️ Apply CORS for Express
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
+
+// 📦 Middlewares
 app.use(express.json());
 app.use('/api/auth', authRoutes);
+
+// 🔐 Authenticate socket connection with JWT
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    credentials: true,
+  },
+});
 
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
@@ -40,7 +56,7 @@ io.use((socket, next) => {
 });
 
 io.on('connection', (socket) => {
-  console.log(` Connected: ${socket.user.username}`);
+  console.log(`🔌 Connected: ${socket.user.username}`);
 
   socket.on('prompt', async (prompt) => {
     socket.emit('status', '⏳ Generating...');
@@ -53,5 +69,15 @@ io.on('connection', (socket) => {
   });
 });
 
+// 🚀 Start the server
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => {
+    console.log('✅ MongoDB connected');
+    server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+  })
+  .catch((err) => console.error('❌ MongoDB error:', err));
