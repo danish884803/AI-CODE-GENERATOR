@@ -10,7 +10,7 @@ function Login({ setToken }) {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', form);
+      const res = await axios.post('https://ai-code-generator-backend.vercel.app/api/auth/login', form);
       setToken(res.data.token); 
     } catch {
       alert('Login failed');
@@ -19,8 +19,8 @@ function Login({ setToken }) {
 
   const handleRegister = async () => {
     try {
-      await axios.post('http://localhost:5000/api/auth/register', form);
-      const res = await axios.post('http://localhost:5000/api/auth/login', form);
+      await axios.post('https://ai-code-generator-backend.vercel.app/api/auth/register', form);
+      const res = await axios.post('https://ai-code-generator-backend.vercel.app/api/auth/login', form);
       setToken(res.data.token); 
     } catch {
       alert('Registration failed');

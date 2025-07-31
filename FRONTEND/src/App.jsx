@@ -4,7 +4,7 @@ import Login from './Login';
 import axios from 'axios';
 import './App.css'; // Import the custom CSS
 
-const ENDPOINT = 'http://localhost:5000';
+const ENDPOINT = 'https://ai-code-generator-backend.vercel.app/';
 
 function App() {
   const [token, setToken] = useState('');
