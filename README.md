@@ -14,7 +14,7 @@ Welcome to the **AI Code Generator** — a smart, intuitive tool that converts n
 - 📄 Auto-docs and unit test generation from code  
 - 💬 Conversational prompt interface
 - 🔐 JWT-based Authentication (Login/Register)
-- 🤖 AI Code Generation using OpenAI/Gemini
+- 🤖 AI Code Generation using Gemini
 - 💬 Real-time Messaging via WebSockets (Socket.IO)
 - 🧠 Prompt Enhancer for better AI responses
 - 📦 Code Export and Download
