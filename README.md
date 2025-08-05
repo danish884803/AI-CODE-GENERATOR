@@ -1,6 +1,6 @@
 # 🧠 AI Code Generator 
 
-Welcome to the **AI Code Generator** — a smart, intuitive tool that converts natural language prompts into clean, efficient code. Powered by **Google’s Gemini AI**, this project is designed to accelerate coding productivity while minimizing errors.
+Welcome to the **AI Code Generator** — a smart, intuitive tool that converts natural language prompts into clean, efficient code. Powered by **Google’s Gemini AI**, this project is designed to accelerate coding productivity while minimizing errors.You can download as text file
 
 ## 🔗 Repository
 
